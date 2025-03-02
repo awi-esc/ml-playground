@@ -27,20 +27,33 @@ function mynorm(x)
     return x_norm
 end
 
-begin
+function gen_x_1D(n)
     # Draw a toy dataset with x1 and x2
-    N_SAMPLES = 200
-    X = Float32.(rand(rng, Uniform(0.0, 2 * π), (2, N_SAMPLES)))
-    Y_noise   = Float32.(rand(rng, Normal(0.0, 0.3), (1, N_SAMPLES)))
+    X = Float32.(rand(rng, Uniform(0.0, 2 * π), (1, n)))
+    Y_noise   = Float32.(rand(rng, Normal(0.0, 0.3), (1, n)))
+    Y = Float32.(Y_noise .* 0.0)
+    Y[1,:] = sin.(X[1, :]) .+ Y_noise[1,:]
+    return X, Y
+end
+
+function gen_x_2D(n)
+    # Draw a toy dataset with x1 and x2
+    X = Float32.(rand(rng, Uniform(0.0, 2 * π), (2, n)))
+    Y_noise   = Float32.(rand(rng, Normal(0.0, 0.3), (1, n)))
     Y = Float32.(Y_noise .* 0.0)
     Y[1,:] = sin.(X[1, :]) .+ cos.(X[2, :]) .+ Y_noise[1,:]
-
-    X_norm = mapslices(mynorm,X,dims=2)
+    return X, Y
 end
+
+N_SAMPLES = 200
+X, Y = gen_x_1D(N_SAMPLES)
+#X, Y = gen_x_2D(N_SAMPLES)
+
+X_norm = mapslices(mynorm,X,dims=2)
 
 # Define the model architecture
 model = Chain(
-    Dense(2, 10, Lux.relu),
+    Dense(1, 10, Lux.relu),
     Dense(10, 10, Lux.relu),
     Dense(10, 10, Lux.relu),
     Dense(10, 1, identity)
@@ -80,10 +93,14 @@ function plot_it(x,y,y_pred)
     scatter!(ax1,x[1,:],y[:], color=:grey60, markersize=8, label="data")
     scatter!(ax1,x[1,:],y_pred[:], color=:green, label="prediction")
     
-    ax2 = Axis(fig[1,3:4])
-    scatter!(ax2,x[2,:],y[:], color=:grey60, markersize=8, label="data")
-    scatter!(ax2,x[2,:],y_pred[:], color=:green, label="prediction")
-    
+    if size(x)[1] > 1
+        ax2 = Axis(fig[1,3:4])
+        scatter!(ax2,x[2,:],y[:], color=:grey60, markersize=8, label="data")
+        scatter!(ax2,x[2,:],y_pred[:], color=:green, label="prediction")
+    else
+        ax2 = missing
+    end
+
     ax3 = Axis(fig[2,2:3])
     scatter!(ax3,y[:], y_pred[:], label="Predicted vs True")
     ablines!(ax3,0,1)
