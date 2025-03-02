@@ -31,9 +31,9 @@ begin
     # Draw a toy dataset with x1 and x2
     N_SAMPLES = 200
     X = Float32.(rand(rng, Uniform(0.0, 2 * π), (2, N_SAMPLES)))
-    y_noise   = Float32.(rand(rng, Normal(0.0, 0.3), (1, N_SAMPLES)))
-    Y = Float32.(y_noise .* 0.0)
-    Y[1,:] = sin.(X[1, :]) .+ cos.(X[2, :]) .+ y_noise[1,:]
+    Y_noise   = Float32.(rand(rng, Normal(0.0, 0.3), (1, N_SAMPLES)))
+    Y = Float32.(Y_noise .* 0.0)
+    Y[1,:] = sin.(X[1, :]) .+ cos.(X[2, :]) .+ Y_noise[1,:]
 
     X_norm = mapslices(mynorm,X,dims=2)
 end
@@ -117,6 +117,8 @@ end
 begin
     fig = Figure(size=(600,600))
     ax  = Axis(fig[1,1],yscale=log10)
+    ax.xlabel = "Epoch"
+    ax.ylabel = "Loss"
     lines!(ax,loss_history)
     fig
 end
