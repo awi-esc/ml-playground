@@ -3,9 +3,6 @@ import Pkg
 Pkg.activate(".")
 Pkg.instantiate()
 
-Pkg.add(["Lux", "Random", "Optimisers", "Zygote"])
-Pkg.add(["NCDatasets","CSV", "DataFrames", "Statistics", "CairoMakie","JLD2","Printf"])
-
 using Lux
 using Random
 using Optimisers
