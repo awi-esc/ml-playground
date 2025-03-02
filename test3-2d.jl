@@ -115,8 +115,9 @@ for epoch = 1:N_EPOCHS
 end
 
 begin
-    fig, ax = lines(loss_history)
-    #ax.yscale = log10
+    fig = Figure(size=(600,600))
+    ax  = Axis(fig[1,1],yscale=log10)
+    lines!(ax,loss_history)
     fig
 end
 
